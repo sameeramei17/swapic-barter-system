@@ -1,0 +1,733 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>SWAPIC — India's #1 Barter, Rent & Trade Network</title>
+  <meta name="description" content="SWAPIC is India's premier barter marketplace where you can exchange products, rent gear, or buy & sell with Aadhaar verification and UPI escrow protection.">
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            swapic: {
+              emerald: '#059669',
+              saffron: '#f97316',
+              amber: '#d97706',
+              indigo: '#4f46e5',
+              surface: '#f8fafc',
+              card: '#ffffff'
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body class="bg-slate-50 text-slate-900 min-h-screen flex flex-col selection:bg-emerald-500 selection:text-white pb-20 md:pb-0">
+
+  <!-- ==================== TOP NAVIGATION ==================== -->
+  <header class="sticky top-0 z-40 w-full bg-white/90 backdrop-blur-md border-b border-slate-200 shadow-sm">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 sm:h-20 flex items-center justify-between gap-2 sm:gap-4">
+      
+      <!-- Logo & Brand (SWAPIC) -->
+      <a href="#" onclick="window.swapicApp.resetFilters();" class="flex items-center gap-2.5 group">
+        <div class="w-10 h-10 sm:w-11 sm:h-11 rounded-2xl bg-gradient-to-tr from-emerald-600 via-teal-600 to-indigo-600 flex items-center justify-center text-white shadow-md shadow-emerald-950/20 group-hover:scale-105 transition-transform">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.3" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+          </svg>
+        </div>
+        <div>
+          <div class="flex items-center gap-1.5">
+            <span class="font-extrabold text-xl sm:text-2xl font-display tracking-tight text-slate-900">
+              SWAP<span class="text-emerald-600">IC</span>
+            </span>
+            <span class="px-1.5 py-0.5 rounded text-[9px] font-extrabold bg-orange-100 text-orange-700 border border-orange-200 tracking-wide">
+              INDIA 🇮🇳
+            </span>
+          </div>
+          <span class="text-[10px] text-slate-500 font-medium block -mt-1 hidden sm:block">Barter • Rent • Sell</span>
+        </div>
+      </a>
+
+      <!-- Quick Indian City Selector -->
+      <div class="flex items-center bg-slate-100/90 border border-slate-200 rounded-xl px-2.5 py-1.5 text-xs">
+        <span class="text-emerald-600 mr-1.5 text-sm">📍</span>
+        <select id="cityFilterSelect" class="bg-transparent text-slate-800 font-semibold focus:outline-none cursor-pointer text-xs">
+          <option value="all">All India</option>
+          <option value="Bengaluru">Bengaluru</option>
+          <option value="Delhi NCR">Delhi NCR</option>
+          <option value="Mumbai">Mumbai</option>
+          <option value="Pune">Pune</option>
+          <option value="Hyderabad">Hyderabad</option>
+          <option value="Chennai">Chennai</option>
+          <option value="Kolkata">Kolkata</option>
+          <option value="Ahmedabad">Ahmedabad</option>
+        </select>
+      </div>
+
+      <!-- Dedicated Language Selector Option -->
+      <div class="flex items-center bg-slate-100/90 border border-slate-200 rounded-xl px-2.5 py-1.5 text-xs" title="Select Preferred Language">
+        <span class="text-indigo-600 mr-1.5 text-sm">🌐</span>
+        <select id="languageSelect" class="bg-transparent text-slate-800 font-semibold focus:outline-none cursor-pointer text-xs">
+          <option value="en">English (Default)</option>
+          <option value="hi">Hindi (हिन्दी)</option>
+          <option value="ta">Tamil (தமிழ்)</option>
+          <option value="te">Telugu (తెలుగు)</option>
+          <option value="bn">Bengali (বাংলা)</option>
+          <option value="mr">Marathi (मराठी)</option>
+          <option value="gu">Gujarati (ગુજરાતી)</option>
+          <option value="kn">Kannada (ಕನ್ನಡ)</option>
+        </select>
+      </div>
+
+      <!-- Search Input Desktop & Tablet -->
+      <div class="hidden lg:flex flex-1 max-w-sm relative mx-2">
+        <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+          </svg>
+        </div>
+        <input 
+          type="text" 
+          id="searchInput" 
+          placeholder="Search iPhone, Royal Enfield, Lehenga, UPSC books..." 
+          class="w-full pl-10 pr-4 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs sm:text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:bg-white focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all"
+        />
+      </div>
+
+      <!-- Action Area & User Profile -->
+      <div class="flex items-center gap-2 sm:gap-3">
+        
+        <!-- Wallet & Barter Points Widget -->
+        <div id="headerWalletDisplay" class="cursor-pointer" onclick="window.swapicApp.openActivityModal()" title="View UPI Escrow & Barter Points">
+          <!-- Injected dynamically -->
+        </div>
+
+        <!-- Activity & Proposals Notification Button -->
+        <button 
+          id="openActivityBtn" 
+          class="relative p-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 hover:text-slate-900 transition-all border border-slate-200"
+          title="Trade Requests & Active Rentals">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+          </svg>
+          <span id="activityBadge" class="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-emerald-600 text-white font-extrabold text-[10px] flex items-center justify-center pulse-badge shadow-sm">
+            2
+          </span>
+        </button>
+
+        <!-- Post an Item CTA -->
+        <button 
+          id="openPostListingBtn" 
+          class="hidden sm:flex items-center gap-1.5 px-3.5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs sm:text-sm font-bold shadow-md shadow-emerald-900/10 transition-all hover:scale-[1.02] active:scale-[0.98]">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/>
+          </svg>
+          <span>+ Post Item</span>
+        </button>
+
+        <!-- Current User Avatar -->
+        <div class="flex items-center gap-2 pl-0.5 cursor-pointer" onclick="window.swapicApp.openActivityModal()" title="Aditya Verma (Aadhaar Verified)">
+          <img 
+            src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=120&q=80" 
+            alt="Aditya Verma" 
+            class="w-9 h-9 sm:w-10 sm:h-10 rounded-full object-cover border-2 border-emerald-500 hover:border-emerald-600 transition-colors shadow-sm"
+          />
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Mobile Search Bar -->
+    <div class="px-4 pb-3 lg:hidden">
+      <div class="relative">
+        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+          </svg>
+        </div>
+        <input 
+          type="text" 
+          oninput="window.swapicApp.searchQuery = this.value.toLowerCase().trim(); window.swapicApp.renderListings();"
+          placeholder="Search items, wishlists, brands, or cities..." 
+          class="w-full pl-9 pr-3 py-2 rounded-xl bg-slate-100 border border-slate-200 text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:bg-white focus:border-emerald-500"
+        />
+      </div>
+    </div>
+  </header>
+
+  <!-- ==================== HERO SECTION (LIGHT THEME) ==================== -->
+  <section class="relative overflow-hidden py-10 sm:py-16 px-4 sm:px-6 lg:px-8 border-b border-slate-200 bg-gradient-to-b from-white via-slate-50 to-slate-50">
+    <div class="max-w-4xl mx-auto text-center relative z-10">
+      
+      <!-- India Badge -->
+      <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white border border-slate-200 text-xs font-semibold text-emerald-800 mb-4 shadow-sm">
+        <span class="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
+        <span>India's Smart Barter & Rental Network</span>
+        <span class="text-slate-300">•</span>
+        <span class="text-orange-600 font-bold">100% UPI Escrow Protected</span>
+      </div>
+
+      <h1 class="text-3xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight font-display text-slate-900 leading-tight">
+        Trade What You Have.<br>
+        <span class="bg-gradient-to-r from-emerald-600 via-teal-600 to-indigo-600 bg-clip-text text-transparent">
+          Barter, Rent, or Sell
+        </span> Anything in India.
+      </h1>
+
+      <p class="mt-3 sm:mt-5 text-sm sm:text-lg text-slate-600 max-w-2xl mx-auto leading-relaxed">
+        Exchange electronics, cameras, and bikes without spending cash. Rent wedding outfits or professional tools for the weekend. Verified by Aadhaar and backed by UPI escrow.
+      </p>
+
+      <!-- Key Metrics -->
+      <div id="heroMetrics">
+        <!-- Injected via app.js -->
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== MAIN CONTENT & LISTINGS ==================== -->
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-7 flex-1 w-full">
+
+    <!-- Mode Switcher Tabs (Pure English) -->
+    <div class="flex items-center justify-between flex-wrap gap-4 mb-5">
+      <div class="flex items-center p-1.5 rounded-2xl bg-white border border-slate-200 shadow-sm w-full sm:w-auto overflow-x-auto no-scrollbar">
+        <button data-mode="all" class="mode-pill flex-1 sm:flex-none px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all bg-emerald-600 text-white shadow-md">
+          ✨ All Products
+        </button>
+        <button data-mode="barter" class="mode-pill flex-1 sm:flex-none px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all bg-slate-100 text-slate-700 hover:bg-slate-200">
+          🔄 Direct Barter
+        </button>
+        <button data-mode="rent" class="mode-pill flex-1 sm:flex-none px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all bg-slate-100 text-slate-700 hover:bg-slate-200">
+          ⏱️ Rent Gear
+        </button>
+        <button data-mode="sell" class="mode-pill flex-1 sm:flex-none px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all bg-slate-100 text-slate-700 hover:bg-slate-200">
+          🏷️ Buy & Sell
+        </button>
+      </div>
+
+      <!-- Sort & Filter info -->
+      <div class="flex items-center justify-between sm:justify-end gap-3 w-full sm:w-auto text-xs text-slate-500">
+        <span id="listingsCount" class="font-medium text-slate-700">Loading products...</span>
+        
+        <div class="flex items-center gap-1.5 bg-white border border-slate-200 rounded-xl px-3 py-1.5 shadow-sm">
+          <span class="text-slate-400">Sort:</span>
+          <select id="sortSelect" class="bg-transparent text-slate-800 font-semibold focus:outline-none cursor-pointer">
+            <option value="recommended">Recommended</option>
+            <option value="price-low">Price / Value: Low to High</option>
+            <option value="price-high">Price / Value: High to Low</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- Category Chips Carousel (Pure English) -->
+    <div id="categoryChipsContainer" class="flex items-center gap-2 overflow-x-auto pb-3 mb-6 no-scrollbar">
+      <!-- Injected via app.js -->
+    </div>
+
+    <!-- Product Grid -->
+    <div id="listingsGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 sm:gap-6">
+      <!-- Injected dynamically via app.js -->
+    </div>
+  </main>
+
+  <!-- ==================== FOOTER (LIGHT THEME) ==================== -->
+  <footer class="border-t border-slate-200 bg-white py-12 px-4 sm:px-6 lg:px-8 mt-16 text-slate-500 text-xs">
+    <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+      <div>
+        <div class="flex items-center gap-2 text-slate-900 font-bold text-lg font-display mb-3">
+          <div class="w-8 h-8 rounded-xl bg-emerald-600 flex items-center justify-center text-white text-xs font-bold">
+            🔄
+          </div>
+          SWAP<span class="text-emerald-600">IC</span>
+          <span class="text-[10px] text-orange-600 font-bold ml-1">INDIA</span>
+        </div>
+        <p class="text-slate-600 leading-relaxed mb-4">
+          India's most trusted circular barter, rent, and trade community. Empowering Indian students, creators, and professionals to exchange products directly with zero middleman commissions.
+        </p>
+        <div class="flex items-center gap-2 text-emerald-700 font-semibold">
+          <span>🛡️ Verified Aadhaar & UPI Escrow</span>
+        </div>
+      </div>
+
+      <div>
+        <h4 class="text-slate-900 font-bold uppercase tracking-wider mb-3">Barter & Exchange</h4>
+        <ul class="space-y-2">
+          <li><a href="#" class="hover:text-slate-900 transition-colors">How Swapping Works</a></li>
+          <li><a href="#" class="hover:text-slate-900 transition-colors">UPI Cash Sweetener Rules</a></li>
+          <li><a href="#" class="hover:text-slate-900 transition-colors">Metro Station Safe Exchange Zones</a></li>
+          <li><a href="#" class="hover:text-slate-900 transition-colors">Dunzo & Porter Delivery Guide</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <h4 class="text-slate-900 font-bold uppercase tracking-wider mb-3">Rentals & Sales</h4>
+        <ul class="space-y-2">
+          <li><a href="#" class="hover:text-slate-900 transition-colors">Camera & Wedding Wear Rentals</a></li>
+          <li><a href="#" class="hover:text-slate-900 transition-colors">Security Deposit UPI Refund Policy</a></li>
+          <li><a href="#" class="hover:text-slate-900 transition-colors">Damage Waiver Protection</a></li>
+          <li><a href="#" class="hover:text-slate-900 transition-colors">Direct Sell Escrow Guarantee</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <h4 class="text-slate-900 font-bold uppercase tracking-wider mb-3">Top Indian Hubs</h4>
+        <ul class="space-y-2">
+          <li><a href="#" class="hover:text-slate-900 transition-colors">Bengaluru (Indiranagar, Koramangala, HSR)</a></li>
+          <li><a href="#" class="hover:text-slate-900 transition-colors">Delhi NCR (Old Rajinder Nagar, Gurugram)</a></li>
+          <li><a href="#" class="hover:text-slate-900 transition-colors">Mumbai (Bandra, Powai, Andheri)</a></li>
+          <li><a href="#" class="hover:text-slate-900 transition-colors">Pune, Hyderabad, Chennai & Kolkata</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="max-w-7xl mx-auto pt-8 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-4">
+      <div>&copy; 2026 SWAPIC Technologies Pvt. Ltd. All rights reserved.</div>
+      <div class="flex items-center gap-4">
+        <a href="#" class="hover:text-slate-900">Terms of Barter</a>
+        <a href="#" class="hover:text-slate-900">Privacy & Aadhaar Policy</a>
+        <a href="#" class="hover:text-slate-900">UPI Escrow Safety</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ==================== MOBILE BOTTOM APP BAR (LIGHT THEME) ==================== -->
+  <div class="fixed bottom-0 inset-x-0 z-40 md:hidden bg-white/95 backdrop-blur-md border-t border-slate-200 px-4 py-2 flex items-center justify-around shadow-lg">
+    <button onclick="window.swapicApp.resetFilters(); window.scrollTo({top:0, behavior:'smooth'});" class="flex flex-col items-center gap-1 text-emerald-600">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+      </svg>
+      <span class="text-[10px] font-bold">Home</span>
+    </button>
+
+    <button onclick="document.getElementById('searchInput').focus(); window.scrollTo({top:0, behavior:'smooth'});" class="flex flex-col items-center gap-1 text-slate-500 hover:text-slate-900">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+      </svg>
+      <span class="text-[10px] font-medium">Search</span>
+    </button>
+
+    <button id="mobilePostBtn" class="flex flex-col items-center -mt-5">
+      <div class="w-12 h-12 rounded-full bg-emerald-600 hover:bg-emerald-700 flex items-center justify-center text-white shadow-lg font-bold text-xl border-2 border-white">
+        +
+      </div>
+      <span class="text-[10px] font-bold text-emerald-700 mt-0.5">Post</span>
+    </button>
+
+    <button id="mobileActivityBtn" class="flex flex-col items-center gap-1 text-slate-500 hover:text-slate-900 relative">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+      </svg>
+      <span class="text-[10px] font-medium">My Trades</span>
+    </button>
+
+    <button onclick="window.swapicApp.openActivityModal()" class="flex flex-col items-center gap-1 text-slate-500 hover:text-slate-900">
+      <img src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=60&q=80" class="w-5 h-5 rounded-full object-cover border border-slate-300">
+      <span class="text-[10px] font-medium">Profile</span>
+    </button>
+  </div>
+
+  <!-- ==================== MODAL 1: ITEM DETAIL & TRANSACT ==================== -->
+  <div id="itemDetailModal" class="app-modal fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-slate-900/60 backdrop-blur-sm hidden overflow-y-auto">
+    <div class="animate-modal glass-modal w-full max-w-4xl rounded-3xl overflow-hidden shadow-2xl my-auto max-h-[92vh] flex flex-col bg-white border border-slate-200">
+      
+      <!-- Modal Header -->
+      <div class="p-4 sm:p-5 border-b border-slate-200 flex items-center justify-between bg-slate-50">
+        <div class="flex items-center gap-2 flex-wrap">
+          <span id="modalItemCategory" class="px-2.5 py-1 rounded-md text-xs font-bold bg-emerald-50 text-emerald-800 border border-emerald-200">Category</span>
+          <span class="text-xs text-slate-400">•</span>
+          <span id="modalItemLocation" class="text-xs text-slate-600 font-semibold">City & Location</span>
+        </div>
+        <button data-close-modal class="w-8 h-8 rounded-full bg-slate-200 hover:bg-slate-300 flex items-center justify-center text-slate-600 hover:text-slate-900 transition-colors">
+          ✕
+        </button>
+      </div>
+
+      <!-- Modal Body -->
+      <div class="p-4 sm:p-6 overflow-y-auto space-y-6">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          
+          <!-- Left Column: Gallery & Details -->
+          <div class="lg:col-span-7 space-y-5">
+            <div id="modalImageGallery"></div>
+
+            <div>
+              <div class="flex items-center justify-between mb-2">
+                <span id="modalItemCondition" class="text-xs font-bold px-2 py-0.5 rounded bg-emerald-50 text-emerald-800 border border-emerald-200">Like New</span>
+              </div>
+              <h2 id="modalItemTitle" class="text-xl sm:text-2xl font-bold font-display text-slate-900">Item Title</h2>
+              <p id="modalItemDescription" class="mt-3 text-xs sm:text-sm text-slate-600 leading-relaxed"></p>
+            </div>
+
+            <!-- Key Features -->
+            <div>
+              <h4 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">Key Specifications</h4>
+              <ul id="modalFeaturesList" class="grid grid-cols-1 sm:grid-cols-2 gap-2"></ul>
+            </div>
+
+            <!-- Owner Card with Aadhaar -->
+            <div id="modalOwnerCard" class="p-4 rounded-2xl bg-slate-50 border border-slate-200 flex items-center justify-between flex-wrap gap-3"></div>
+          </div>
+
+          <!-- Right Column: Interactive Transact Panels -->
+          <div class="lg:col-span-5 bg-slate-50 p-5 rounded-2xl border border-slate-200 flex flex-col justify-between">
+            <div>
+              <h3 class="text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">Choose How to Transact</h3>
+              <div id="modalActionPanels">
+                <!-- Injected dynamically based on item modes -->
+              </div>
+            </div>
+
+            <!-- Trust assurance badges -->
+            <div class="mt-6 pt-4 border-t border-slate-200 text-[11px] text-slate-500 space-y-2">
+              <div class="flex items-center gap-2">
+                <span class="text-emerald-600 font-bold">✓</span>
+                <span>Aadhaar Verified Trader & Metro Safe Zone Exchange</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="text-emerald-600 font-bold">✓</span>
+                <span>100% UPI Escrow Protection (PhonePe, GPay, Paytm)</span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ==================== MODAL 2: SWAP PROPOSAL WIZARD ==================== -->
+  <div id="swapProposalModal" class="app-modal fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-slate-900/60 backdrop-blur-sm hidden overflow-y-auto">
+    <div class="animate-modal glass-modal w-full max-w-xl rounded-3xl overflow-hidden shadow-2xl my-auto bg-white border border-slate-200">
+      
+      <div class="p-4 sm:p-5 border-b border-slate-200 flex items-center justify-between bg-slate-50">
+        <div class="flex items-center gap-2">
+          <div class="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold text-sm">🔄</div>
+          <div>
+            <h3 class="font-bold text-slate-900 text-base">Propose a Barter Exchange</h3>
+            <p class="text-xs text-slate-500">Trade item for item with optional UPI cash sweetener</p>
+          </div>
+        </div>
+        <button data-close-modal class="w-8 h-8 rounded-full bg-slate-200 hover:bg-slate-300 flex items-center justify-center text-slate-600 hover:text-slate-900">✕</button>
+      </div>
+
+      <div class="p-5 sm:p-6 space-y-5">
+        
+        <!-- Target Item Summary -->
+        <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-between">
+          <div>
+            <div class="text-[11px] uppercase tracking-wider text-slate-400 font-bold">You are trading for</div>
+            <div id="swapTargetTitle" class="text-sm font-bold text-emerald-700">Product Title</div>
+            <div class="text-xs text-slate-500">Owner: <span id="swapTargetOwner" class="text-slate-800">Owner</span></div>
+          </div>
+          <div class="text-right">
+            <div class="text-[11px] text-slate-400">Est. Value</div>
+            <div id="swapTargetValue" class="text-base font-bold font-display text-slate-900">~₹50,000</div>
+          </div>
+        </div>
+
+        <!-- Step 1: Pick from Your Inventory -->
+        <div>
+          <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-2">
+            1. Select an item from your inventory to offer:
+          </label>
+          <div id="userInventoryPicker" class="space-y-2 max-h-48 overflow-y-auto pr-1">
+            <!-- Injected via app.js -->
+          </div>
+        </div>
+
+        <!-- Step 2: Cash Sweetener / Adjustment in INR -->
+        <div>
+          <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
+            2. Cash Sweetener via UPI (Optional top-up to equalize trade):
+          </label>
+          <div class="relative">
+            <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-emerald-600 font-bold">₹</span>
+            <input 
+              type="number" 
+              id="cashSweetenerInput" 
+              placeholder="0 (e.g. 2000 to add ₹2,000 via UPI)" 
+              class="w-full pl-8 pr-3 py-2.5 rounded-xl bg-slate-50 border border-slate-300 text-sm text-slate-900 focus:outline-none focus:bg-white focus:border-emerald-500"
+            />
+          </div>
+          <p class="text-[11px] text-slate-500 mt-1">Adding a UPI cash sweetener bridges any valuation gap and increases proposal acceptance!</p>
+        </div>
+
+        <!-- Step 3: Message to Owner -->
+        <div>
+          <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
+            3. Note to Seller / Handover Preference:
+          </label>
+          <textarea 
+            id="swapProposalNote" 
+            rows="2" 
+            placeholder="Hello! My item is in 10/10 condition. Open for Metro station meetup or Dunzo courier..."
+            class="w-full p-3 rounded-xl bg-slate-50 border border-slate-300 text-xs sm:text-sm text-slate-900 focus:outline-none focus:bg-white focus:border-emerald-500 resize-none"
+          ></textarea>
+        </div>
+
+        <!-- Action Submit -->
+        <button 
+          onclick="window.swapicApp.submitSwapProposal()" 
+          class="w-full py-3.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs sm:text-sm shadow-md transition-all flex items-center justify-center gap-2">
+          <span>🚀 Send Barter Proposal</span>
+        </button>
+
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ==================== MODAL 3: POST A NEW LISTING ==================== -->
+  <div id="postListingModal" class="app-modal fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-slate-900/60 backdrop-blur-sm hidden overflow-y-auto">
+    <div class="animate-modal glass-modal w-full max-w-2xl rounded-3xl overflow-hidden shadow-2xl my-auto max-h-[92vh] flex flex-col bg-white border border-slate-200">
+      
+      <div class="p-4 sm:p-5 border-b border-slate-200 flex items-center justify-between bg-slate-50">
+        <div>
+          <h3 class="font-bold text-slate-900 text-lg">List a Product on SWAPIC</h3>
+          <p class="text-xs text-slate-500">Choose any combination of Barter, Rent, or Direct Sale</p>
+        </div>
+        <button data-close-modal class="w-8 h-8 rounded-full bg-slate-200 hover:bg-slate-300 flex items-center justify-center text-slate-600 hover:text-slate-900">✕</button>
+      </div>
+
+      <form id="postListingForm" class="p-5 sm:p-6 overflow-y-auto space-y-4">
+        
+        <!-- Title & Category -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Product Title *</label>
+            <input type="text" id="postTitle" required placeholder="e.g. Royal Enfield Hunter Riding Jacket (Size L)" class="w-full px-3 py-2.5 rounded-xl bg-slate-50 border border-slate-300 text-xs sm:text-sm text-slate-900 focus:bg-white focus:border-emerald-500 focus:outline-none">
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Category *</label>
+            <select id="postCategory" class="w-full px-3 py-2.5 rounded-xl bg-slate-50 border border-slate-300 text-xs sm:text-sm text-slate-900 focus:bg-white focus:border-emerald-500 focus:outline-none">
+              <option value="Mobiles & Tablets">Mobiles & Tablets</option>
+              <option value="Laptops & Tech">Laptops & Computers</option>
+              <option value="Cameras & Creator Gear">Cameras & Creator Gear</option>
+              <option value="Two-Wheelers & Auto">Two-Wheelers & Auto</option>
+              <option value="Fashion & Ethnic Wear">Fashion & Ethnic Wear</option>
+              <option value="Books & Exam Prep">Books & Exam Prep</option>
+              <option value="Gaming & Consoles">Gaming & Consoles</option>
+              <option value="Musical Instruments">Musical Instruments</option>
+              <option value="Home & Appliances">Home & Kitchen Appliances</option>
+              <option value="Furniture & Hostel Living">Furniture & Hostel Living</option>
+              <option value="Power Tools & DIY">Power Tools & Hardware</option>
+              <option value="Sports & Fitness">Sports & Cricket</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Condition, City & Location -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Condition *</label>
+            <select id="postCondition" class="w-full px-3 py-2.5 rounded-xl bg-slate-50 border border-slate-300 text-xs sm:text-sm text-slate-900 focus:bg-white focus:border-emerald-500 focus:outline-none">
+              <option value="Brand New (Sealed)">Brand New (Sealed)</option>
+              <option value="Like New (Mint)" selected>Like New (Mint)</option>
+              <option value="Excellent">Excellent</option>
+              <option value="Good (Minor wear)">Good (Minor wear)</option>
+              <option value="Vintage Good">Vintage Good</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">City *</label>
+            <select id="postCity" class="w-full px-3 py-2.5 rounded-xl bg-slate-50 border border-slate-300 text-xs sm:text-sm text-slate-900 focus:bg-white focus:border-emerald-500 focus:outline-none">
+              <option value="Bengaluru">Bengaluru</option>
+              <option value="Delhi NCR">Delhi NCR</option>
+              <option value="Mumbai">Mumbai</option>
+              <option value="Pune">Pune</option>
+              <option value="Hyderabad">Hyderabad</option>
+              <option value="Chennai">Chennai</option>
+              <option value="Kolkata">Kolkata</option>
+              <option value="Ahmedabad">Ahmedabad</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Area / Metro Zone *</label>
+            <input type="text" id="postLocation" required placeholder="e.g. Indiranagar / Metro Station" class="w-full px-3 py-2.5 rounded-xl bg-slate-50 border border-slate-300 text-xs sm:text-sm text-slate-900 focus:bg-white focus:border-emerald-500 focus:outline-none">
+          </div>
+        </div>
+
+        <!-- Description -->
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">Description *</label>
+          <textarea id="postDescription" rows="3" required placeholder="Describe condition, bill/box availability, why you want to trade or rent it..." class="w-full p-3 rounded-xl bg-slate-50 border border-slate-300 text-xs sm:text-sm text-slate-900 focus:bg-white focus:border-emerald-500 focus:outline-none"></textarea>
+        </div>
+
+        <!-- Image URL -->
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">Photo Image URL (Optional - high-res preset will be used if blank)</label>
+          <input type="url" id="postImageUrl" placeholder="https://images.unsplash.com/..." class="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-300 text-xs text-slate-900 focus:bg-white focus:border-emerald-500 focus:outline-none">
+        </div>
+
+        <!-- Allowed Transaction Modes Checkboxes -->
+        <div class="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-3">
+          <label class="block text-xs font-bold uppercase tracking-wider text-slate-700">
+            Select Enabled Transaction Modes (Check all that apply):
+          </label>
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <label class="flex items-center gap-2 p-2.5 rounded-lg bg-white border border-slate-200 cursor-pointer shadow-sm">
+              <input type="checkbox" id="postModeBarter" checked class="w-4 h-4 accent-emerald-600">
+              <span class="text-xs font-bold text-slate-800">🔄 Allow Barter</span>
+            </label>
+            <label class="flex items-center gap-2 p-2.5 rounded-lg bg-white border border-slate-200 cursor-pointer shadow-sm">
+              <input type="checkbox" id="postModeRent" class="w-4 h-4 accent-indigo-600">
+              <span class="text-xs font-bold text-slate-800">⏱️ Allow Renting</span>
+            </label>
+            <label class="flex items-center gap-2 p-2.5 rounded-lg bg-white border border-slate-200 cursor-pointer shadow-sm">
+              <input type="checkbox" id="postModeSell" checked class="w-4 h-4 accent-amber-600">
+              <span class="text-xs font-bold text-slate-800">🏷️ Allow Direct Sale</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Barter-specific fields -->
+        <div id="barterFieldsGroup" class="p-4 rounded-xl bg-emerald-50 border border-emerald-200 space-y-3">
+          <div class="text-xs font-bold text-emerald-800 uppercase tracking-wider">Barter Requirements</div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label class="block text-xs text-slate-700 mb-1">What are you seeking in exchange? *</label>
+              <input type="text" id="postWishlist" placeholder="e.g. OnePlus 12, Drone, or Gaming Laptop" class="w-full px-3 py-2 rounded-xl bg-white border border-slate-300 text-xs text-slate-900">
+            </div>
+            <div>
+              <label class="block text-xs text-slate-700 mb-1">Estimated Item Value (₹ INR) *</label>
+              <input type="number" id="postEstimatedValue" placeholder="e.g. 15000" class="w-full px-3 py-2 rounded-xl bg-white border border-slate-300 text-xs text-slate-900">
+            </div>
+          </div>
+        </div>
+
+        <!-- Rent-specific fields -->
+        <div id="rentFieldsGroup" class="p-4 rounded-xl bg-indigo-50 border border-indigo-200 space-y-3" style="display:none;">
+          <div class="text-xs font-bold text-indigo-800 uppercase tracking-wider">Rental Terms</div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label class="block text-xs text-slate-700 mb-1">Daily Rental Rate (₹ / day) *</label>
+              <input type="number" id="postRentDaily" placeholder="e.g. 400" class="w-full px-3 py-2 rounded-xl bg-white border border-slate-300 text-xs text-slate-900">
+            </div>
+            <div>
+              <label class="block text-xs text-slate-700 mb-1">Refundable UPI Deposit (₹) *</label>
+              <input type="number" id="postRentDeposit" placeholder="e.g. 2000" class="w-full px-3 py-2 rounded-xl bg-white border border-slate-300 text-xs text-slate-900">
+            </div>
+          </div>
+        </div>
+
+        <!-- Sell-specific fields -->
+        <div id="sellFieldsGroup" class="p-4 rounded-xl bg-amber-50 border border-amber-200 space-y-3">
+          <div class="text-xs font-bold text-amber-800 uppercase tracking-wider">Direct Sale Price</div>
+          <div>
+            <label class="block text-xs text-slate-700 mb-1">Cash Purchase Price (₹ INR) *</label>
+            <input type="number" id="postSalePrice" placeholder="e.g. 12000" class="w-full px-3 py-2 rounded-xl bg-white border border-slate-300 text-xs text-slate-900">
+          </div>
+        </div>
+
+        <button type="submit" class="w-full py-3.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs sm:text-sm shadow-md transition-all">
+          ✓ Publish Product on SWAPIC
+        </button>
+
+      </form>
+
+    </div>
+  </div>
+
+  <!-- ==================== MODAL 4: ACTIVITY & PROPOSALS DRAWER ==================== -->
+  <div id="activityModal" class="app-modal fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-slate-900/60 backdrop-blur-sm hidden overflow-y-auto">
+    <div class="animate-modal glass-modal w-full max-w-2xl rounded-3xl overflow-hidden shadow-2xl my-auto max-h-[92vh] flex flex-col bg-white border border-slate-200">
+      
+      <div class="p-4 sm:p-5 border-b border-slate-200 flex items-center justify-between bg-slate-50">
+        <div class="flex items-center gap-3">
+          <img src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=100&q=80" class="w-10 h-10 rounded-full border-2 border-emerald-500 object-cover">
+          <div>
+            <h3 class="font-bold text-slate-900 text-base">Aditya Verma's Trade Desk (Bengaluru)</h3>
+            <div class="text-xs text-slate-500">Trust Score: <span class="text-emerald-700 font-bold">4.96 ★ (31 Swaps)</span> • Aadhaar Verified ✓</div>
+          </div>
+        </div>
+        <button data-close-modal class="w-8 h-8 rounded-full bg-slate-200 hover:bg-slate-300 flex items-center justify-center text-slate-600 hover:text-slate-900">✕</button>
+      </div>
+
+      <div class="p-5 sm:p-6 overflow-y-auto" id="activityContentContainer">
+        <!-- Injected via app.js -->
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ==================== MODAL 5: NEGOTIATION CHAT & ESCROW HANDSHAKE ==================== -->
+  <div id="chatModal" class="app-modal fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-slate-900/60 backdrop-blur-sm hidden overflow-y-auto">
+    <div class="animate-modal glass-modal w-full max-w-lg rounded-3xl overflow-hidden shadow-2xl my-auto flex flex-col h-[650px] max-h-[90vh] bg-white border border-slate-200">
+      
+      <!-- Chat Header -->
+      <div class="p-4 border-b border-slate-200 flex items-center justify-between bg-slate-50">
+        <div class="flex items-center gap-3">
+          <div class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></div>
+          <div>
+            <h4 id="chatPartnerName" class="text-sm font-bold text-slate-900 leading-none">Trader</h4>
+            <span id="chatPartnerStatus" class="text-[11px] text-emerald-700 font-medium">Online • Aadhaar Verified</span>
+          </div>
+        </div>
+        <button data-close-modal class="w-7 h-7 rounded-full bg-slate-200 hover:bg-slate-300 flex items-center justify-center text-slate-600 hover:text-slate-900">✕</button>
+      </div>
+
+      <!-- Pinned Deal Summary Card -->
+      <div class="p-3 bg-slate-50 border-b border-slate-200 flex items-center gap-3">
+        <img id="chatItemThumb" src="" class="w-12 h-12 rounded-lg object-cover bg-slate-200 border border-slate-300">
+        <div class="flex-1 min-w-0">
+          <div class="text-[10px] uppercase font-bold text-emerald-700 tracking-wider" id="chatItemModes">BARTER</div>
+          <div id="chatItemTitle" class="text-xs font-bold text-slate-900 truncate">Item Title</div>
+          <div class="text-[11px] text-slate-500 flex items-center gap-1.5">
+            <span>🤝 UPI Escrow Protected</span>
+          </div>
+        </div>
+        <button onclick="window.swapicApp.showToast('Escrow deal handshake accepted! Waiting for trader confirmation.', 'success')" class="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-[11px] font-bold shadow-sm">
+          Lock Deal
+        </button>
+      </div>
+
+      <!-- Messages Body -->
+      <div id="chatMessagesContainer" class="flex-1 p-4 overflow-y-auto space-y-3 bg-white">
+        <!-- Injected dynamically -->
+      </div>
+
+      <!-- Quick prompts (English) -->
+      <div class="px-4 py-2 border-t border-slate-200 bg-slate-50 flex gap-2 overflow-x-auto no-scrollbar">
+        <button onclick="document.getElementById('chatMessageInput').value = 'Is this still available for barter?'; window.swapicApp.sendChatMessage();" class="whitespace-nowrap px-2.5 py-1 rounded-full bg-white text-[11px] text-slate-700 hover:text-slate-900 border border-slate-200 shadow-sm">
+          "Still available?"
+        </button>
+        <button onclick="document.getElementById('chatMessageInput').value = 'Can we meet at the nearest Metro Station for safe handshake?'; window.swapicApp.sendChatMessage();" class="whitespace-nowrap px-2.5 py-1 rounded-full bg-white text-[11px] text-slate-700 hover:text-slate-900 border border-slate-200 shadow-sm">
+          "Metro meetup?"
+        </button>
+        <button onclick="document.getElementById('chatMessageInput').value = 'I will add ₹1,000 UPI cash sweetener to balance the deal!'; window.swapicApp.sendChatMessage();" class="whitespace-nowrap px-2.5 py-1 rounded-full bg-white text-[11px] text-slate-700 hover:text-slate-900 border border-slate-200 shadow-sm">
+          "+₹1,000 UPI sweetener"
+        </button>
+      </div>
+
+      <!-- Input Bar -->
+      <form onsubmit="event.preventDefault(); window.swapicApp.sendChatMessage();" class="p-3 border-t border-slate-200 bg-slate-50 flex items-center gap-2">
+        <input 
+          type="text" 
+          id="chatMessageInput" 
+          placeholder="Type message in English..." 
+          class="flex-1 px-3.5 py-2 rounded-xl bg-white border border-slate-300 text-xs text-slate-900 focus:outline-none focus:border-emerald-500"
+        />
+        <button type="submit" class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-sm">
+          Send
+        </button>
+      </form>
+
+    </div>
+  </div>
+
+  <!-- ==================== TOAST CONTAINER ==================== -->
+  <div id="toastContainer" class="fixed bottom-24 sm:bottom-8 left-1/2 -translate-x-1/2 z-50 flex flex-col gap-2 pointer-events-none w-auto max-w-md"></div>
+
+  <!-- Application Logic -->
+  <script src="app.js"></script>
+</body>
+</html>
